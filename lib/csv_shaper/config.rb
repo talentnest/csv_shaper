@@ -6,7 +6,7 @@ module CsvShaper
   # as well the option to output the header row
 
   class Config
-    CUSTOM_DEFAULT_OPTIONS = { header_inflector: :humanize }
+    CUSTOM_DEFAULT_OPTIONS = { header_inflector: :humanize, translation: false }
 
     attr_reader :options
 

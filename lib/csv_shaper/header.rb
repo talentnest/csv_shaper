@@ -22,6 +22,7 @@ module CsvShaper
       @mappings = {}
       @columns = []
       @inflector = CsvShaper::Shaper.config.options[:header_inflector]
+      @translation = CsvShaper::Shaper.config.options[:translation]
 
       if block_given?
         yield self
@@ -72,6 +73,15 @@ module CsvShaper
       @inflector = header_inflector
     end
 
+    # Public: Translate column names using I18n, disabled by default
+    # Example:
+    # ```
+    # header.translate!
+    # ```
+    def translate!(opts = {})
+      @translation = opts
+    end
+
     # Public: converts columns and mappings into mapped columns
     # ready for encoding. If a mapped value is found that is used,
     # else the Symbol column name is humanized by default or can be specified
@@ -80,9 +90,12 @@ module CsvShaper
     # Returns an Array of Strings
     def mapped_columns
       @columns.map do |column|
-        @mappings[column] || column.to_s.send(@inflector)
+        if @mappings.key?(column)
+          @mappings[column]
+        else
+          @translation ? I18n.translate(column, @translation) : column.to_s.send(@inflector)
+        end
       end
     end
-
   end
 end
